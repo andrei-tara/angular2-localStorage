@@ -4,6 +4,7 @@ import {NgZone} from 'angular2/src/core/zone';
 export class LocalStorageEmitter {
 
     protected static subscribed = {};
+    protected static subscribers = [];
 
     public static register(ngZone:any) {
         LocalStorageEmitter.subscribed[ngZone] = ngZone.onTurnDone.subscribe(() => {
@@ -13,7 +14,6 @@ export class LocalStorageEmitter {
         });
     }
 
-    protected static subscribers = [];
 
     public static subscribe(callback:Function) {
         LocalStorageEmitter.subscribers.push(callback);
@@ -30,7 +30,7 @@ class LocalStorageService implements OnDestroy {
         LocalStorageEmitter.register(this.ngZone);
     }
 
-    ngOnDestroy(){
+    ngOnDestroy() {
         LocalStorageEmitter.unregister(this.ngZone);
     }
 }
