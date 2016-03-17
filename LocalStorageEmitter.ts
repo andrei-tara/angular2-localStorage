@@ -3,15 +3,10 @@ import {NgZone} from 'angular2/src/core/zone';
 
 export class LocalStorageEmitter {
 
-    protected static subscribed = [];
-    protected static ngZones:NgZone[] = [];
+    protected static subscribed = {};
 
-    public static register(ngZone:NgZone) {
-        let index:number = LocalStorageEmitter.ngZones.indexOf(ngZone);
-        if (index === -1) {
-            index = LocalStorageEmitter.ngZones.push(ngZone) - 1;
-        }
-        LocalStorageEmitter.subscribed[index] = ngZone.onTurnDone.subscribe(() => {
+    public static register(ngZone:any) {
+        LocalStorageEmitter.subscribed[ngZone] = ngZone.onTurnDone.subscribe(() => {
             for (let callback of LocalStorageEmitter.subscribers) {
                 callback();
             }
@@ -24,11 +19,8 @@ export class LocalStorageEmitter {
         LocalStorageEmitter.subscribers.push(callback);
     }
 
-    public static unregister(ngZone:NgZone) {
-        let index:number = LocalStorageEmitter.ngZones.indexOf(ngZone);
-        if (index >= 0) {
-            LocalStorageEmitter.subscribed[index].unsubscribe();
-        }
+    public static unregister(ngZone:any) {
+        LocalStorageEmitter.subscribed[ngZone].unsubscribe();
     }
 }
 
@@ -38,17 +30,17 @@ class LocalStorageService implements OnDestroy {
         LocalStorageEmitter.register(this.ngZone);
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(){
         LocalStorageEmitter.unregister(this.ngZone);
     }
 }
 
-import {Type} from "angular2/src/facade/lang";
+import {Type} from 'angular2/src/facade/lang';
 import {provide} from 'angular2/src/core/di';
-import {ComponentRef} from 'angular2/core';
 
-export function LocalStorageSubscriber(appPromise:Promise<ComponentRef>) {
+export function LocalStorageSubscriber(appPromise:Promise<any>) {
     appPromise.then((bla) => {
-        bla.injector.resolveAndInstantiate(<Type>LocalStorageService);
+        console.log('app booted', bla);
+        console.log(bla.injector.resolveAndInstantiate(<Type>LocalStorageService));
     });
 }
