@@ -5,18 +5,18 @@ directive (class property) using HTML5' LocalStorage.
 
 ## Use
 
-1. Download the library using npm or github: `npm install angular2-localstorage`
+1. Download the library using npm or github: `npm install angular2-localstorage-annotation`
 2. Register the LocalStorage in your boot.ts:
 ```typescript
 var appPromise = bootstrap(MyRootAppComponent);
 
 // register LocalStorage, this registers our change-detection.
-import {LocalStorageSubscriber} from 'angular2-localstorage/LocalStorageEmitter';
+import {LocalStorageSubscriber} from 'angular2-localStorage/LocalStorageEmitter';
 LocalStorageSubscriber(appPromise);
 ```
 3. Use the `LocalStorage` decorator
 ```typescript
-import {LocalStorage} from "angular2-localstorage/LocalStorage";
+import {LocalStorage} from "angular2-localStorage/LocalStorage";
 
 class MySuperComponent {
     @LocalStorage() public lastSearchQuery:Object = {};
@@ -24,11 +24,8 @@ class MySuperComponent {
 }
 ```
 
-**Note**: Define always a default value at the property you are using `@LocalStorage`.
-
-**Note**: The localStorage key is per default the property name. Define the first argument of `@LocalStorage` to set different one.
-
-**Note**: Please don't store circular structures as this library uses JSON.stringify to encode before using LocalStorage.
+*Note*: Define always a default value at the property you are using `@LocalStorage`.
+*Note*: The localStorage key is per default the property name. Define the first argument of `@LocalStorage` to set different one.
 
 ## Examples
 
@@ -42,7 +39,7 @@ class MySuperComponent {
         <input type="password" [(ngModel)]="password" placeholder="Password" />
     </div>
     
-    <input type="checkbox" [(ngModel)]="rememberMe" /> Keep me logged in
+    <input type="checkbox" [(ngModel)]="keepLoggedIn" /> Keep me logged in
 
     <button type="submit>Login</button
 </form>
@@ -54,8 +51,8 @@ class AppLoginComponent {
     
     public password:string;
     
-    //here happens the magic. `rememberMe` is always restored from the localStorage when you reload the site
-    @LocalStorage() public rememberMe:boolean = false;
+    //here happens the magic. `keepLoggedIn` is always restored from the localStorage when you reload the site
+    @LocalStorage() public keepLoggedIn:boolean = false;
 }
 ```
 
@@ -68,7 +65,7 @@ class AppLoginComponent {
     <h2 (click)="hiddenMenuItems[i] = !!!hiddenMenuItems[i]">
         {{i}}: {{category.label}}
     </h2>
-    <div style="padding-left: 15px;" [hidden]="hiddenMenuItems[i]">
+    <div style="padding-left: 15px;" [hidden]="!hiddenMenuItems[i]">
         <a href>Some sub menu item 1</a>
         <a href>Some sub menu item 2</a>
         <a href>Some sub menu item 3</a>
