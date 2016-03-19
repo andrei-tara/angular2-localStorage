@@ -10,7 +10,7 @@ export function LocalStorage(storageKey?:string) {
             storageKey = '' + '/' + decoratedPropertyName;
         }
 
-        Object.defineProperty(target, '_' + decoratedPropertyName + '_mapped', {
+        Object.defineProperty(target, '_' + decoratedPropertyName + '_mapped', <PropertyDescriptor>{
             enumerable: false,
             configurable: true,
             writable: true,
@@ -31,6 +31,7 @@ export function LocalStorage(storageKey?:string) {
             }
         }
         var oldJSONValues = {};
+        console.log('init', storageValueJSON, storageValue);
 
         Object.defineProperty(target, decoratedPropertyName, {
             get: function () {
@@ -68,12 +69,13 @@ export function LocalStorage(storageKey?:string) {
         LocalStorageEmitter.subscribe(() => {
             for (let instance of instances) {
                 var currentValue = JSON.stringify(instance[decoratedPropertyName]);
-                var oldJSONValue = oldJSONValues[this['_' + decoratedPropertyName + '_mapped']];
+                var oldJSONValue = storageValueJSON[this['_' + decoratedPropertyName + '_mapped']];
                 if (currentValue !== oldJSONValue) {
-                    oldJSONValues[this['_' + decoratedPropertyName + '_mapped']] = currentValue;
+                    storageValueJSON[this['_' + decoratedPropertyName + '_mapped']] = currentValue;
                     localStorage.setItem(storageKey, currentValue);
+                    console.log('LocalStorage changed', instances.length, instance[decoratedPropertyName]);
                 }
             }
         });
-    }
+    };
 }
